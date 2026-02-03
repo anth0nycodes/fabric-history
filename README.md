@@ -29,7 +29,7 @@ yarn add @anth0nycodes/fabric-history
 ## Usage
 
 ```javascript
-import { Canvas } from "fabric";
+import { FabricCanvasWithHistory } from "@anth0nycodes/fabric-history";
 
 // Usage example coming soon
 ```
