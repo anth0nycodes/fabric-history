@@ -1,1 +1,1 @@
-console.log("hello");
+export { CanvasWithHistory } from "./canvas.js";
