@@ -31,8 +31,9 @@ Fixes #
 
 <!-- Describe the testing you've done -->
 
-- [ ] Tested locally with `pnpm dev`
-- [ ] Tested built version with `pnpm build && pnpm start`
+- [ ] Tests pass locally with `pnpm test`
+- [ ] Type checking passes with `pnpm check`
+- [ ] Build succeeds with `pnpm build`
 
 ## Checklist
 

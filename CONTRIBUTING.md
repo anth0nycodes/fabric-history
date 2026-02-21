@@ -25,31 +25,43 @@ Thank you for your interest in contributing to fabric-history! We welcome contri
 
 2. Make your changes and ensure they follow the project's coding standards
 
-3. Run type checking to ensure there are no TypeScript errors:
+3. Run the test suite to ensure all tests pass:
+
+   ```bash
+   pnpm test
+   ```
+
+   For test coverage:
+
+   ```bash
+   pnpm coverage
+   ```
+
+4. Run type checking to ensure there are no TypeScript errors:
 
    ```bash
    pnpm check
    ```
 
-4. Build the project to verify everything compiles:
+5. Build the project to verify everything compiles:
 
    ```bash
    pnpm build
    ```
 
-5. Commit your changes with a clear and descriptive commit message:
+7. Commit your changes with a clear and descriptive commit message:
 
    ```bash
    git commit -m "Add: description of your changes"
    ```
 
-6. Push to your fork:
+8. Push to your fork:
 
    ```bash
    git push origin feature/your-feature-name
    ```
 
-7. Open a pull request against the main repository
+9. Open a pull request against the main repository
 
 ## Reporting Issues
 

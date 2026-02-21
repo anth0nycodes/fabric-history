@@ -93,7 +93,7 @@ export class CanvasWithHistory extends Canvas {
    * Undo the most recent action.
    */
   async undo() {
-    if (this._historyUndo.length === 0) return;
+    if (this._historyUndo.length <= 1) return;
     this._historyProcessing = true;
 
     const poppedState = this._historyUndo.pop();
