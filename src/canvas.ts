@@ -19,6 +19,8 @@ export class CanvasWithHistory extends Canvas {
     this._isMoving = false;
     this._historyProcessing = false;
     this._historyCurrentState = this._historyCurrent();
+
+    this._saveInitialState();
     this._bindEventListeners();
   }
 
@@ -35,6 +37,12 @@ export class CanvasWithHistory extends Canvas {
       "object:modified": this._handleObjectModified.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
     });
+  }
+
+  private _saveInitialState() {
+    const initialState = this._historyCurrent();
+    this._historyUndo = [initialState];
+    this._historyCurrentState = initialState;
   }
 
   /**
@@ -78,20 +86,39 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Undo the most recent action.
+   * Undo the most recent action and refreshes the canvas to reflect the previous state.
    */
-  undo() {
+  async undo() {
     if (this._historyUndo.length === 0) return;
+    this._historyProcessing = true;
 
     const poppedState = this._historyUndo.pop();
     if (!poppedState) return;
 
     this._historyRedo.push(poppedState);
 
-    // refresh canvas to load previous state
+    // refresh canvas to load what remains on the undo stack after popping
     const previousState = this._historyUndo[this._historyUndo.length - 1];
+    if (!previousState) return;
     this._historyCurrentState = previousState;
-    this._loadFromHistory(previousState);
+    await this._loadFromHistory(previousState);
+  }
+
+  /**
+   * Redo the most recently undone action and refreshes the canvas to reflect the next state.
+   */
+  async redo() {
+    if (this._historyRedo.length === 0) return;
+    this._historyProcessing = true;
+
+    const poppedState = this._historyRedo.pop();
+    if (!poppedState) return;
+
+    this._historyUndo.push(poppedState);
+
+    // refresh canvas to load the popped state
+    this._historyCurrentState = poppedState;
+    await this._loadFromHistory(poppedState);
   }
 
   /**
@@ -99,20 +126,41 @@ export class CanvasWithHistory extends Canvas {
    *
    * @param historyState - The JSON string representing the previous canvas state to load.
    */
-  private _loadFromHistory(historyState: string) {
-    const history = JSON.parse(historyState);
+  private async _loadFromHistory(historyState: string) {
+    this.clear();
+    this.discardActiveObject();
 
-    // TODO: finish up history loading logic
-    this.loadFromJSON(history, () => {
+    try {
+      const parsed = JSON.parse(historyState);
+      await this.loadFromJSON(parsed);
       this.renderAll();
-    });
+    } catch (error) {
+      console.error("Error loading from history:", error);
+    } finally {
+      this._historyProcessing = false;
+    }
   }
 
   /**
    * Checks for whether or not an action can be undone.
    */
   canUndo() {
-    return this._historyUndo.length > 0;
+    return this._historyUndo.length > 1;
+  }
+
+  /**
+   * Checks for whether or not an action can be redone.
+   */
+  canRedo() {
+    return this._historyRedo.length > 0;
+  }
+
+  /**
+   * Clears the history stacks for undo and redo.
+   */
+  clearHistory() {
+    this._historyUndo = [];
+    this._historyRedo = [];
   }
 
   /**
