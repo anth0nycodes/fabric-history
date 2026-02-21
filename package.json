@@ -12,7 +12,7 @@
     "check": "tsc --noEmit",
     "publish:npm": "pnpm publish --access public"
   },
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "keywords": [
     "fabric",
     "fabric.js",
@@ -25,12 +25,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anth0nycodes/license-generator.git"
+    "url": "git+https://github.com/anth0nycodes/fabric-history.git"
   },
   "bugs": {
-    "url": "https://github.com/anth0nycodes/license-generator/issues"
+    "url": "https://github.com/anth0nycodes/fabric-history/issues"
   },
-  "homepage": "https://github.com/anth0nycodes/license-generator#readme",
+  "homepage": "https://github.com/anth0nycodes/fabric-history#readme",
   "peerDependencies": {
     "fabric": ">=6.0.0 <8.0.0"
   },
