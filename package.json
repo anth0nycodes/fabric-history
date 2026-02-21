@@ -1,6 +1,6 @@
 {
   "name": "@anth0nycodes/fabric-history",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A library built on top of fabric.js that allows for easy access to canvas history.",
   "type": "module",
   "scripts": {
