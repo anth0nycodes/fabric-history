@@ -20,8 +20,8 @@ export class CanvasWithHistory extends Canvas {
     this._historyProcessing = false;
     this._historyCurrentState = this._historyCurrent();
 
-    this._saveInitialState();
     this._bindEventListeners();
+    this._saveInitialState();
   }
 
   /**
@@ -39,6 +39,9 @@ export class CanvasWithHistory extends Canvas {
     });
   }
 
+  /**
+   * Saves the initial state of the canvas.
+   */
   private _saveInitialState() {
     const initialState = this._historyCurrent();
     this._historyUndo = [initialState];
@@ -65,8 +68,9 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Returns the current state of the canvas as a string
-   * @see {@link https://fabricjs.com/docs/old-docs/fabric-intro-part-3/#serialization | Fabric.js Serialization} for why we use toDatalessJSON() instead of toJSON()
+   * Returns the current state of the canvas as a string.
+   *
+   * @see {@link https://fabricjs.com/docs/old-docs/fabric-intro-part-3/#serialization | Fabric.js Serialization} for why we use toDatalessJSON() instead of toJSON().
    */
   private _historyCurrent() {
     return JSON.stringify(this.toDatalessJSON());
@@ -79,14 +83,14 @@ export class CanvasWithHistory extends Canvas {
     if (this._historyProcessing || this._isMoving) return;
     const latestJSON = this._historyCurrent();
 
-    if (this._historyCurrentState === latestJSON) return; // Skips saving if the current history state equals the latest history state
+    if (this._historyCurrentState === latestJSON) return;
     this._historyUndo.push(latestJSON);
-    this._historyCurrentState = latestJSON; // updates the current history state to the latest state after saving to the undo stack
+    this._historyCurrentState = latestJSON;
     this._historyRedo = [];
   }
 
   /**
-   * Undo the most recent action and refreshes the canvas to reflect the previous state.
+   * Undo the most recent action.
    */
   async undo() {
     if (this._historyUndo.length === 0) return;
@@ -105,7 +109,14 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Redo the most recently undone action and refreshes the canvas to reflect the next state.
+   * Checks for whether or not an action can be undone.
+   */
+  canUndo() {
+    return this._historyUndo.length > 1;
+  }
+
+  /**
+   * Redo the most recently undone action.
    */
   async redo() {
     if (this._historyRedo.length === 0) return;
@@ -122,9 +133,16 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Loads a previous canvas state from the history stack and renders it on the canvas.
+   * Checks for whether or not an action can be redone.
+   */
+  canRedo() {
+    return this._historyRedo.length > 0;
+  }
+
+  /**
+   * Loads a canvas history state from the history stack and renders it on the canvas.
    *
-   * @param historyState - The JSON string representing the previous canvas state to load.
+   * @param historyState - The JSON string representing the canvas history state to load.
    */
   private async _loadFromHistory(historyState: string) {
     this.clear();
@@ -139,20 +157,6 @@ export class CanvasWithHistory extends Canvas {
     } finally {
       this._historyProcessing = false;
     }
-  }
-
-  /**
-   * Checks for whether or not an action can be undone.
-   */
-  canUndo() {
-    return this._historyUndo.length > 1;
-  }
-
-  /**
-   * Checks for whether or not an action can be redone.
-   */
-  canRedo() {
-    return this._historyRedo.length > 0;
   }
 
   /**
