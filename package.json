@@ -13,6 +13,10 @@
     "publish:npm": "pnpm publish --access public"
   },
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "types": "dist/index.d.ts",
   "keywords": [
     "fabric",

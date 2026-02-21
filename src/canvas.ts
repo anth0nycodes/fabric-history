@@ -32,7 +32,7 @@ export class CanvasWithHistory extends Canvas {
       "path:created": this._historySaveAction.bind(this),
       "erasing:end": this._historySaveAction.bind(this),
       "object:added": this._historySaveAction.bind(this),
-      "object:removed": this._historySaveAction.bind(this),
+      "object:removed": this._historySaveAction.bind(this), // TODO: handle object modification + deletion batching
       "object:moving": this._objectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
