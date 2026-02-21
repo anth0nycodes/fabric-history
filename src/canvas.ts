@@ -162,7 +162,7 @@ export class CanvasWithHistory extends Canvas {
   /**
    * Clears the history stacks for undo and redo.
    */
-  clearHistory() {
+  private _clearHistory() {
     this._historyUndo = [];
     this._historyRedo = [];
   }
@@ -184,6 +184,7 @@ export class CanvasWithHistory extends Canvas {
 
   dispose() {
     this._disposeEventListeners();
+    this._clearHistory();
     return super.dispose();
   }
 }
