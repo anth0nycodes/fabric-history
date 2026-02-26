@@ -41,6 +41,7 @@ export class CanvasWithHistory extends Canvas {
       "object:moving": this._objectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
       "selection:created": this._handleSelectionCreated.bind(this),
+      "selection:cleared": this._handleSelectionCleared.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
     });
   }
@@ -56,6 +57,16 @@ export class CanvasWithHistory extends Canvas {
     if (currentSelectedObjects.length > 1) {
       this._isMultiSelection = true;
       this._selectedObjects = currentSelectedObjects;
+    }
+  }
+
+  /**
+   * Handles the selection:cleared event to reset multi-selection state and clear the stored selected objects when the selection is cleared.
+   */
+  private _handleSelectionCleared() {
+    if (this._selectedObjects.length > 1 && this._isMultiSelection) {
+      this._isMultiSelection = false;
+      this._selectedObjects = [];
     }
   }
 
