@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { Circle, Path, Rect } from "fabric";
+import { Circle, Group, Path, Rect } from "fabric";
 import { beforeEach, describe, expect, test } from "vitest";
 import { CanvasWithHistory } from "./canvas";
 
@@ -9,6 +9,7 @@ describe("canvas operations with history management", () => {
   let circle: Circle;
   let path: Path;
   let rect: Rect;
+  let group: Group;
 
   beforeEach(() => {
     const canvasEl = document.createElement("canvas");
@@ -33,6 +34,8 @@ describe("canvas operations with history management", () => {
       width: 50,
       height: 50,
     });
+
+    group = new Group([rect, circle]);
   });
 
   test("canvas only contains rect and circle after undo", async () => {
@@ -78,6 +81,21 @@ describe("canvas operations with history management", () => {
 
     // After redo: canvas should contain all 3 objects again
     expect(canvas.getObjects().length).toBe(3);
+  });
+
+  test("canvas contains group again after undo then redo", async () => {
+    canvas.add(path);
+    canvas.add(group);
+
+    await canvas.undo();
+
+    expect(canvas.contains(group)).toBe(false);
+    expect(canvas.getObjects().some((obj) => obj.type === "group")).toBe(false);
+
+    await canvas.redo();
+
+    expect(canvas.getObjects().some((obj) => obj.type === "group")).toBe(true);
+    expect(canvas.getObjects().length).toBe(2);
   });
 
   test("canvas contains rect and path after two undos then one redo", async () => {

@@ -32,7 +32,7 @@ export class CanvasWithHistory extends Canvas {
       "path:created": this._historySaveAction.bind(this),
       "erasing:end": this._historySaveAction.bind(this),
       "object:added": this._historySaveAction.bind(this),
-      "object:removed": this._historySaveAction.bind(this),
+      "object:removed": this._historySaveAction.bind(this), // TODO: handle object modification + deletion batching
       "object:moving": this._objectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
@@ -162,7 +162,7 @@ export class CanvasWithHistory extends Canvas {
   /**
    * Clears the history stacks for undo and redo.
    */
-  clearHistory() {
+  private _clearHistory() {
     this._historyUndo = [];
     this._historyRedo = [];
   }
@@ -184,6 +184,7 @@ export class CanvasWithHistory extends Canvas {
 
   dispose() {
     this._disposeEventListeners();
+    this._clearHistory();
     return super.dispose();
   }
 }
