@@ -10,7 +10,7 @@ importers:
     dependencies:
       fabric:
         specifier: '>=6.0.0 <8.0.0'
-        version: 7.1.0
+        version: 7.2.0
     devDependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.7.0
@@ -633,8 +633,8 @@ packages:
     resolution: {integrity: sha512-knvyeauYhqjOYvQ66MznSMs83wmHrCycNEN6Ao+2AeYEfxUIkuiVxdEa1qlGEPK+We3n0THiDciYSsCcgW/DoA==}
     engines: {node: '>=12.0.0'}
 
-  fabric@7.1.0:
-    resolution: {integrity: sha512-061QsoSw6xn7UoRXYq816qMyvObP4gRNVph0jAFWtG5E2kBlfdjrYBiLPRuaAHSmVQUz9RjbPpePB/hljiYJIw==}
+  fabric@7.2.0:
+    resolution: {integrity: sha512-XSYmSqSMrlbCg+/j7/uU/PFeZuA5hHRDp7sGbDlMvz/T6BHt2MQSOYtz/AIdr+kmReA1s5jTzHJ8AjHwYUcmfQ==}
     engines: {node: '>=20.0.0'}
 
   fdir@6.5.0:
@@ -1668,7 +1668,7 @@ snapshots:
 
   expect-type@1.3.0: {}
 
-  fabric@7.1.0:
+  fabric@7.2.0:
     optionalDependencies:
       canvas: 3.2.1
       jsdom: 26.1.0(canvas@3.2.1)
