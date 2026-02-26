@@ -55,9 +55,6 @@ await canvas.undo();
 
 // Redo the undone action
 await canvas.redo();
-
-// Clear history if needed
-canvas.clearHistory();
 ```
 
 ## API
@@ -68,14 +65,13 @@ Extends fabric.js `Canvas` class with history management capabilities.
 
 #### Methods
 
-| Method           | Returns         | Description                                     |
-| ---------------- | --------------- | ----------------------------------------------- |
-| `undo()`         | `Promise<void>` | Undo the most recent action                     |
-| `redo()`         | `Promise<void>` | Redo the most recently undone action            |
-| `canUndo()`      | `boolean`       | Check if an undo action is available            |
-| `canRedo()`      | `boolean`       | Check if a redo action is available             |
-| `clearHistory()` | `void`          | Clear all undo and redo history                 |
-| `dispose()`      | `void`          | Clean up event listeners and dispose the canvas |
+| Method      | Returns         | Description                                     |
+| ----------- | --------------- | ----------------------------------------------- |
+| `undo()`    | `Promise<void>` | Undo the most recent action                     |
+| `redo()`    | `Promise<void>` | Redo the most recently undone action            |
+| `canUndo()` | `boolean`       | Check if an undo action is available            |
+| `canRedo()` | `boolean`       | Check if a redo action is available             |
+| `dispose()` | `void`          | Clean up event listeners and dispose the canvas |
 
 #### Tracked Events
 
