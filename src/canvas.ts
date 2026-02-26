@@ -1,9 +1,12 @@
-import { Canvas } from "fabric";
+import { Canvas, type FabricObject } from "fabric";
 
 export class CanvasWithHistory extends Canvas {
   // History stacks
   private _historyUndo: string[];
   private _historyRedo: string[];
+
+  private _selectedObjects: FabricObject[];
+  private _isMultiSelection: boolean;
 
   // Boolean values to determine whether or not we should save to history
   private _isMoving: boolean;
@@ -16,6 +19,8 @@ export class CanvasWithHistory extends Canvas {
 
     this._historyUndo = [];
     this._historyRedo = [];
+    this._selectedObjects = [];
+    this._isMultiSelection = false;
     this._isMoving = false;
     this._historyProcessing = false;
     this._historyCurrentState = this._historyCurrent();
@@ -35,8 +40,23 @@ export class CanvasWithHistory extends Canvas {
       "object:removed": this._historySaveAction.bind(this), // TODO: handle object modification + deletion batching
       "object:moving": this._objectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
+      "selection:created": this._handleSelectionCreated.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
     });
+  }
+
+  /**
+   * Handles the selection:created event to determine if multiple objects are selected and to store the selected objects for potential multi-object modifications or removal.
+   *
+   * @param options - The options object containing the selected objects.
+   */
+  private _handleSelectionCreated(options: { selected: FabricObject[] }) {
+    const currentSelectedObjects = options.selected;
+
+    if (currentSelectedObjects.length > 1) {
+      this._isMultiSelection = true;
+      this._selectedObjects = currentSelectedObjects;
+    }
   }
 
   /**
@@ -81,12 +101,17 @@ export class CanvasWithHistory extends Canvas {
    */
   private _historySaveAction() {
     if (this._historyProcessing || this._isMoving) return;
-    const latestJSON = this._historyCurrent();
 
-    if (this._historyCurrentState === latestJSON) return;
-    this._historyUndo.push(latestJSON);
-    this._historyCurrentState = latestJSON;
-    this._historyRedo = [];
+    if (this._selectedObjects.length > 1 && this._isMultiSelection) {
+      // something
+    } else {
+      const latestJSON = this._historyCurrent();
+
+      if (this._historyCurrentState === latestJSON) return;
+      this._historyUndo.push(latestJSON);
+      this._historyCurrentState = latestJSON;
+      this._historyRedo = [];
+    }
   }
 
   /**
@@ -178,6 +203,7 @@ export class CanvasWithHistory extends Canvas {
       "object:removed": this._historySaveAction.bind(this),
       "object:moving": this._objectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
+      "selection:created": this._handleSelectionCreated.bind(this),
       "canvas:cleared": this._historySaveAction.bind(this),
     });
   }

@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
-import { Circle, Group, Path, Rect } from "fabric";
+import { ActiveSelection, Circle, Group, Path, Rect } from "fabric";
 import { beforeEach, describe, expect, test } from "vitest";
-import { CanvasWithHistory } from "./canvas";
+import { CanvasWithHistory } from "../dist/canvas.js";
 
 describe("canvas operations with history management", () => {
   let canvas: CanvasWithHistory;
@@ -192,5 +192,20 @@ describe("canvas operations with history management", () => {
 
     // Undo on empty canvas: should still be empty with no errors
     expect(canvas.getObjects().length).toBe(0);
+  });
+
+  test("selection:created fires when multiple objects are selected", () => {
+    canvas.add(rect);
+    canvas.add(circle);
+    canvas.add(path);
+
+    // Create an ActiveSelection with multiple objects (simulates multi-select)
+    const selection = new ActiveSelection([rect, circle], { canvas });
+    canvas.setActiveObject(selection);
+
+    // The console.log in _handleSelectionCreated should fire
+    // Check that the selection is active
+    expect(canvas.getActiveObject()).toBe(selection);
+    expect(canvas.getActiveObjects().length).toBe(2);
   });
 });
