@@ -91,7 +91,7 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   const mouseDown = new MouseEvent("mousedown", {
     clientX: upperCanvas.getBoundingClientRect().left + startX,
     clientY: upperCanvas.getBoundingClientRect().top + startY,
-    bubbles: true,
+    bubbles: true, // bubble so Fabric can catch it
   });
   upperCanvas.dispatchEvent(mouseDown);
 
@@ -108,7 +108,7 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
     const mouseMove = new MouseEvent("mousemove", {
       clientX: currentX,
       clientY: currentY,
-      bubbles: true,
+      bubbles: true, // bubble so Fabric can catch it
     });
     upperCanvas.dispatchEvent(mouseMove);
   }
@@ -116,7 +116,7 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   const mouseUp = new MouseEvent("mouseup", {
     clientX: upperCanvas.getBoundingClientRect().left + endX,
     clientY: upperCanvas.getBoundingClientRect().top + endY,
-    bubbles: true,
+    bubbles: true, // bubble so Fabric can catch it
   });
   upperCanvas.dispatchEvent(mouseUp);
 
