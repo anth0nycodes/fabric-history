@@ -1,4 +1,4 @@
-import { Canvas, Circle, Rect } from "fabric";
+import { Canvas, Circle, Rect, type CanvasEvents } from "fabric";
 import { expect, test } from "vitest";
 import { page, userEvent } from "vitest/browser";
 
@@ -28,7 +28,7 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   ];
 
   eventsToTrack.forEach((eventName) => {
-    canvas.on(eventName as any, (e: any) => {
+    canvas.on(eventName as keyof CanvasEvents, (e: any) => {
       const targetType = e?.target?.type || "unknown";
       events.push(`${eventName} (${targetType})`);
       console.log(`EVENT: ${eventName} (target: ${targetType})`);
@@ -102,7 +102,9 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
       startX +
       ((endX - startX) * i) / 5;
     const currentY =
-      upperCanvas.getBoundingClientRect().top + startY + ((endY - startY) * i) / 5;
+      upperCanvas.getBoundingClientRect().top +
+      startY +
+      ((endY - startY) * i) / 5;
     const mouseMove = new MouseEvent("mousemove", {
       clientX: currentX,
       clientY: currentY,
