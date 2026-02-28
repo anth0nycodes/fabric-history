@@ -1,8 +1,6 @@
-// @vitest-environment jsdom
-
-import { Circle, Group, Path, Rect } from "fabric";
+import { ActiveSelection, Circle, Group, Path, Rect } from "fabric";
 import { beforeEach, describe, expect, test } from "vitest";
-import { CanvasWithHistory } from "./canvas";
+import { CanvasWithHistory } from "../../src/canvas.js";
 
 describe("canvas operations with history management", () => {
   let canvas: CanvasWithHistory;

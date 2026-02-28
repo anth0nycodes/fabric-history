@@ -7,6 +7,8 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "test": "vitest",
+    "test:it": "vitest --project integration",
+    "test:e2e": "vitest --project e2e",
     "coverage": "vitest run --coverage",
     "start": "node dist/index.js",
     "check": "tsc --noEmit",
@@ -46,7 +48,9 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
     "canvas": "^3.2.1",
     "jsdom": "^28.0.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
