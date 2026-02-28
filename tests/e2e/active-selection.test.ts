@@ -1,33 +1,23 @@
-import { Canvas, Circle, Rect, type CanvasEvents } from "fabric";
+import { Canvas, Circle, Rect } from "fabric";
 import { expect, test } from "vitest";
 import { page, userEvent } from "vitest/browser";
-
-// TODO: fix bug where canvas isn't showing on the e2e tests
 
 test("explore: what events fire when dragging an ActiveSelection", async () => {
   // Create a canvas element in the DOM
   const canvasEl = document.createElement("canvas");
   canvasEl.id = "test-canvas";
-  canvasEl.width = 1000;
-  canvasEl.height = 1000;
-  canvasEl.style.border = "1px solid black";
-  canvasEl.style.backgroundColor = "white";
-  canvasEl.style.display = "block";
-  canvasEl.style.position = "absolute";
-  canvasEl.style.top = "0";
-  canvasEl.style.left = "0";
-  document.body.style.margin = "0";
-  document.body.style.padding = "0";
+  canvasEl.width = 800;
+  canvasEl.height = 600;
   document.body.appendChild(canvasEl);
 
   const events: string[] = [];
-  const canvas = new Canvas(canvasEl);
-  canvas.setDimensions({ width: 1000, height: 1000 });
+  const canvas = new Canvas(canvasEl, {
+    width: 800,
+    height: 600,
+  });
 
   // Track events
   const eventsToTrack = [
-    "path:created",
-    "erasing:end",
     "object:added",
     "object:removed",
     "object:modified",
@@ -35,11 +25,10 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
     "selection:created",
     "selection:updated",
     "selection:cleared",
-    "canvas:cleared",
   ];
 
   eventsToTrack.forEach((eventName) => {
-    canvas.on(eventName as keyof CanvasEvents, (e: any) => {
+    canvas.on(eventName as any, (e: any) => {
       const targetType = e?.target?.type || "unknown";
       events.push(`${eventName} (${targetType})`);
       console.log(`EVENT: ${eventName} (target: ${targetType})`);
@@ -69,8 +58,12 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   console.log("--- Objects added, now selecting both ---");
   events.length = 0; // Clear events from adding
 
-  // Get the canvas locator
-  const canvasLocator = page.elementLocator(canvasEl);
+  // Get the upper canvas that Fabric creates (it handles all pointer events)
+  const wrapper = canvasEl.parentElement!;
+  const upperCanvas = wrapper.querySelector(
+    ".upper-canvas"
+  ) as HTMLCanvasElement;
+  const canvasLocator = page.elementLocator(upperCanvas);
 
   // Select both objects by shift-clicking
   // First click on rect (position relative to element)
@@ -138,100 +131,6 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   expect(true).toBe(true);
 
   // Cleanup
-  canvas.dispose();
-  document.body.removeChild(canvasEl);
-});
-
-test("explore: what events fire when deleting an ActiveSelection", async () => {
-  const canvasEl = document.createElement("canvas");
-  canvasEl.id = "test-canvas-delete";
-  canvasEl.width = 800;
-  canvasEl.height = 600;
-  canvasEl.style.border = "1px solid black";
-  canvasEl.style.backgroundColor = "white";
-  canvasEl.style.display = "block";
-  canvasEl.style.position = "absolute";
-  canvasEl.style.top = "0";
-  canvasEl.style.left = "0";
-  document.body.style.margin = "0";
-  document.body.style.padding = "0";
-  document.body.appendChild(canvasEl);
-
-  const events: string[] = [];
-  const canvas = new Canvas(canvasEl, {
-    width: 800,
-    height: 600,
-  });
-
-  const eventsToTrack = [
-    "path:created",
-    "erasing:end",
-    "object:added",
-    "object:removed",
-    "object:modified",
-    "object:moving",
-    "selection:created",
-    "selection:updated",
-    "selection:cleared",
-    "canvas:cleared",
-  ];
-
-  eventsToTrack.forEach((eventName) => {
-    canvas.on(eventName as any, (e: any) => {
-      const targetType = e?.target?.type || "unknown";
-      events.push(`${eventName} (${targetType})`);
-      console.log(`EVENT: ${eventName} (target: ${targetType})`);
-    });
-  });
-
-  const rect = new Rect({
-    left: 100,
-    top: 100,
-    width: 80,
-    height: 60,
-    fill: "red",
-  });
-
-  const circle = new Circle({
-    left: 250,
-    top: 100,
-    radius: 40,
-    fill: "blue",
-  });
-
-  canvas.add(rect);
-  canvas.add(circle);
-  canvas.renderAll();
-
-  events.length = 0;
-
-  // Get the canvas locator
-  const canvasLocator = page.elementLocator(canvasEl);
-
-  // Select both objects
-  await canvasLocator.click({ position: { x: 140, y: 130 } });
-  await userEvent.keyboard("{Shift>}");
-  await canvasLocator.click({ position: { x: 290, y: 140 } });
-  await userEvent.keyboard("{/Shift}");
-
-  console.log("--- Selection created, events:", events);
-  events.length = 0;
-
-  console.log("--- Now pressing Delete key ---");
-
-  // Press delete key
-  await userEvent.keyboard("{Delete}");
-
-  console.log("--- Delete events:", events);
-
-  const removedEvents = events.filter((e) => e.includes("object:removed"));
-
-  console.log(`\n=== SUMMARY ===`);
-  console.log(`object:removed fired ${removedEvents.length} times`);
-  console.log(`Removed event targets: ${removedEvents.join(", ")}`);
-
-  expect(true).toBe(true);
-
   canvas.dispose();
   document.body.removeChild(canvasEl);
 });
