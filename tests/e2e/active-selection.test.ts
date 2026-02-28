@@ -86,36 +86,37 @@ test("explore: what events fire when dragging an ActiveSelection", async () => {
   const endX = 300;
   const endY = 180;
 
-  // Simulate drag by dispatching mouse events directly
+  // Simulate drag by dispatching mouse events directly to upperCanvas
+  // (Fabric.js handles all pointer events on the upper canvas layer)
   const mouseDown = new MouseEvent("mousedown", {
-    clientX: canvasEl.getBoundingClientRect().left + startX,
-    clientY: canvasEl.getBoundingClientRect().top + startY,
+    clientX: upperCanvas.getBoundingClientRect().left + startX,
+    clientY: upperCanvas.getBoundingClientRect().top + startY,
     bubbles: true,
   });
-  canvasEl.dispatchEvent(mouseDown);
+  upperCanvas.dispatchEvent(mouseDown);
 
   // Simulate movement in steps
   for (let i = 1; i <= 5; i++) {
     const currentX =
-      canvasEl.getBoundingClientRect().left +
+      upperCanvas.getBoundingClientRect().left +
       startX +
       ((endX - startX) * i) / 5;
     const currentY =
-      canvasEl.getBoundingClientRect().top + startY + ((endY - startY) * i) / 5;
+      upperCanvas.getBoundingClientRect().top + startY + ((endY - startY) * i) / 5;
     const mouseMove = new MouseEvent("mousemove", {
       clientX: currentX,
       clientY: currentY,
       bubbles: true,
     });
-    canvasEl.dispatchEvent(mouseMove);
+    upperCanvas.dispatchEvent(mouseMove);
   }
 
   const mouseUp = new MouseEvent("mouseup", {
-    clientX: canvasEl.getBoundingClientRect().left + endX,
-    clientY: canvasEl.getBoundingClientRect().top + endY,
+    clientX: upperCanvas.getBoundingClientRect().left + endX,
+    clientY: upperCanvas.getBoundingClientRect().top + endY,
     bubbles: true,
   });
-  canvasEl.dispatchEvent(mouseUp);
+  upperCanvas.dispatchEvent(mouseUp);
 
   console.log("--- Drag events:", events);
 
