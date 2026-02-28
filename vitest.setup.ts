@@ -22,6 +22,7 @@ const getContext = vi.fn(() => ({
   rotate: vi.fn(),
   arc: vi.fn(),
   rect: vi.fn(),
+  strokeRect: vi.fn(),
   clip: vi.fn(),
   measureText: vi.fn(() => ({ width: 0 })),
   transform: vi.fn(),
