@@ -1,15 +1,50 @@
-import { Canvas, type FabricObject } from "fabric";
+import {
+  Canvas,
+  type CanvasEvents,
+  type FabricObject,
+  type TEvent,
+} from "fabric";
+
+// Defines custom event listeners for history events
+declare module "fabric" {
+  interface CanvasEvents {
+    "history:append": Partial<TEvent> & {
+      /**
+       * Serialized canvas state that was saved to history.
+       */
+      json: string;
+      /**
+       * Boolean flag indicating whether or not the appended history action is the initial state of the canvas.
+       */
+      initial: boolean;
+    };
+    "history:undo": Partial<TEvent> & {
+      /**
+       * Serialized canvas state that was most recently undone.
+       */
+      lastUndoAction: string;
+    };
+    "history:redo": Partial<TEvent> & {
+      /**
+       * Serialized canvas state that was most recently redone.
+       */
+      lastRedoAction: string;
+    };
+    "history:cleared": Partial<TEvent>;
+  }
+}
 
 export class CanvasWithHistory extends Canvas {
-  // History stacks
+  // History stack properties
   private _historyUndo: string[];
   private _historyRedo: string[];
 
+  // Multi-selection properties
   private _selectedObjects: FabricObject[];
   private _isMultiSelection: boolean;
 
-  // Boolean values to determine whether or not we should save to history
-  private _isMoving: boolean;
+  // Boolean properties to determine whether or not we should save to history
+  private _historyIsMoving: boolean;
   private _historyProcessing: boolean;
 
   private _historyCurrentState: string;
@@ -21,12 +56,12 @@ export class CanvasWithHistory extends Canvas {
     this._historyRedo = [];
     this._selectedObjects = [];
     this._isMultiSelection = false;
-    this._isMoving = false;
+    this._historyIsMoving = false;
     this._historyProcessing = false;
     this._historyCurrentState = this._historyCurrent();
 
     this._bindEventListeners();
-    this._saveInitialState();
+    this._historySaveInitialState();
   }
 
   /**
@@ -37,17 +72,17 @@ export class CanvasWithHistory extends Canvas {
       "path:created": this._historySaveAction.bind(this),
       "erasing:end": this._historySaveAction.bind(this),
       "object:added": this._historySaveAction.bind(this),
-      "object:removed": this._historySaveAction.bind(this), // TODO: handle object modification + deletion batching
-      "object:moving": this._objectMoving.bind(this),
+      "object:removed": this._handleObjectRemoved.bind(this),
+      "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
       "selection:created": this._handleSelectionCreated.bind(this),
+      "selection:updated": this._handleSelectionUpdated.bind(this),
       "selection:cleared": this._handleSelectionCleared.bind(this),
-      "canvas:cleared": this._historySaveAction.bind(this),
     });
   }
 
   /**
-   * Handles the selection:created event to determine if multiple objects are selected and to store the selected objects for potential multi-object modifications or removal.
+   * Stores the multi-selection state inside `_selectedObjects` and sets the `_isMultiSelection` flag to true.
    *
    * @param options - The options object containing the selected objects.
    */
@@ -55,35 +90,76 @@ export class CanvasWithHistory extends Canvas {
     const currentSelectedObjects = options.selected;
 
     if (currentSelectedObjects.length > 1) {
-      this._isMultiSelection = true;
       this._selectedObjects = currentSelectedObjects;
+      this._isMultiSelection = true;
     }
   }
 
   /**
-   * Handles the selection:cleared event to reset multi-selection state and clear the stored selected objects when the selection is cleared.
+   * Stores the updated multi-selection state inside `_selectedObjects` and sets the `_isMultiSelection` flag to true if there are more than 1 objects selected.
+   *
+   * @param options - The options object containing the updated selected objects.
+   */
+  private _handleSelectionUpdated(options: { selected: FabricObject[] }) {
+    const allSelectedObjects = this.getActiveObjects();
+
+    if (allSelectedObjects.length > 1) {
+      this._selectedObjects = allSelectedObjects;
+      this._isMultiSelection = true;
+    }
+  }
+
+  /**
+   * Clears the multi-selection state and sets the `_isMultiSelection` flag to false.
    */
   private _handleSelectionCleared() {
     if (this._selectedObjects.length > 1 && this._isMultiSelection) {
-      this._isMultiSelection = false;
       this._selectedObjects = [];
+      this._isMultiSelection = false;
     }
   }
 
   /**
    * Saves the initial state of the canvas.
    */
-  private _saveInitialState() {
+  private _historySaveInitialState() {
     const initialState = this._historyCurrent();
     this._historyUndo = [initialState];
     this._historyCurrentState = initialState;
   }
 
   /**
+   * Handles object removal events.
+   *
+   * @param options - The event object containing details about the removed object.
+   */
+  private _handleObjectRemoved(options: { target: FabricObject }) {
+    /*
+     Check !_historyProcessing to prevent recursion: this.remove() fires
+     object:removed events, which would re-enter this handler while we're
+     still processing the first removal.
+    */
+    if (
+      !this._historyProcessing &&
+      this._isMultiSelection &&
+      this._selectedObjects.some((obj) => obj === options.target)
+    ) {
+      this._historyProcessing = true;
+      const objectsToRemove = [...this._selectedObjects];
+      this._selectedObjects = [];
+      this.remove(...objectsToRemove);
+      this.discardActiveObject();
+      this._historyProcessing = false;
+      this._historySaveAction();
+    } else {
+      this._historySaveAction();
+    }
+  }
+  /**
    * Starts the movement event listener for objects.
    */
-  private _objectMoving() {
-    this._isMoving = true;
+  private _handleObjectMoving() {
+    this._historyIsMoving = true;
   }
 
   /**
@@ -94,7 +170,7 @@ export class CanvasWithHistory extends Canvas {
    */
   private _handleObjectModified() {
     // object:moving -> object:modified - modification is triggered as soon as the movement of an object halts
-    this._isMoving = false;
+    this._historyIsMoving = false;
     this._historySaveAction();
   }
 
@@ -108,21 +184,17 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Records the current canvas, object, or path state into the history stack for undo/redo.
+   * Records the current state of the canvas to the history stack if the state has changed since the last recorded state. This method is called after relevant canvas events such as object modifications, additions, and removals.
    */
   private _historySaveAction() {
-    if (this._historyProcessing || this._isMoving) return;
+    if (this._historyProcessing || this._historyIsMoving) return;
+    const latestJSON = this._historyCurrent();
 
-    if (this._selectedObjects.length > 1 && this._isMultiSelection) {
-      // something
-    } else {
-      const latestJSON = this._historyCurrent();
-
-      if (this._historyCurrentState === latestJSON) return;
-      this._historyUndo.push(latestJSON);
-      this._historyCurrentState = latestJSON;
-      this._historyRedo = [];
-    }
+    if (this._historyCurrentState === latestJSON) return; // skips duplicates
+    this._historyUndo.push(latestJSON);
+    this._historyCurrentState = latestJSON;
+    this._historyRedo = [];
+    this.fire("history:append", { json: latestJSON, initial: false });
   }
 
   /**
@@ -142,6 +214,7 @@ export class CanvasWithHistory extends Canvas {
     if (!previousState) return;
     this._historyCurrentState = previousState;
     await this._loadFromHistory(previousState);
+    this.fire("history:undo", { lastUndoAction: poppedState });
   }
 
   /**
@@ -166,13 +239,14 @@ export class CanvasWithHistory extends Canvas {
     // refresh canvas to load the popped state
     this._historyCurrentState = poppedState;
     await this._loadFromHistory(poppedState);
+    this.fire("history:redo", { lastRedoAction: poppedState });
   }
 
   /**
    * Checks for whether or not an action can be redone.
    */
   canRedo() {
-    return this._historyRedo.length > 0;
+    return this._historyRedo.length >= 1;
   }
 
   /**
@@ -181,13 +255,11 @@ export class CanvasWithHistory extends Canvas {
    * @param historyState - The JSON string representing the canvas history state to load.
    */
   private async _loadFromHistory(historyState: string) {
-    this.clear();
-    this.discardActiveObject();
-
     try {
-      const parsed = JSON.parse(historyState);
-      await this.loadFromJSON(parsed);
-      this.renderAll();
+      this.clear();
+      this.discardActiveObject();
+      await this.loadFromJSON(JSON.parse(historyState));
+      this.requestRenderAll();
     } catch (error) {
       console.error("Error loading from history:", error);
     } finally {
@@ -198,9 +270,37 @@ export class CanvasWithHistory extends Canvas {
   /**
    * Clears the history stacks for undo and redo.
    */
-  private _clearHistory() {
-    this._historyUndo = [];
+  clearHistory() {
+    this._historySaveInitialState();
     this._historyRedo = [];
+    this.fire("history:cleared");
+  }
+
+  /**
+   * Debug method to log relevant events to the console. Always remember to remove before pushing!
+   */
+  private _historyDebug() {
+    const EVENTS = [
+      "path:created",
+      "erasing:end",
+      "object:added",
+      "object:removed",
+      "object:moving",
+      "object:modified",
+      "selection:created",
+      "selection:cleared",
+      "canvas:cleared",
+      "history:append",
+      "history:undo",
+      "history:redo",
+      "history:cleared",
+    ];
+
+    EVENTS.forEach((e) => {
+      this.on(e as keyof CanvasEvents, () =>
+        console.log(`📝 Event triggered: ${e}`)
+      );
+    });
   }
 
   /**
@@ -211,17 +311,35 @@ export class CanvasWithHistory extends Canvas {
       "path:created": this._historySaveAction.bind(this),
       "erasing:end": this._historySaveAction.bind(this),
       "object:added": this._historySaveAction.bind(this),
-      "object:removed": this._historySaveAction.bind(this),
-      "object:moving": this._objectMoving.bind(this),
+      "object:removed": this._handleObjectRemoved.bind(this),
+      "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
       "selection:created": this._handleSelectionCreated.bind(this),
-      "canvas:cleared": this._historySaveAction.bind(this),
+      "selection:updated": this._handleSelectionUpdated.bind(this),
+      "selection:cleared": this._handleSelectionCleared.bind(this),
     });
   }
 
+  /**
+   * Cleans up event listeners and history stacks before disposing of the canvas instance.
+   */
   dispose() {
     this._disposeEventListeners();
-    this._clearHistory();
+    this.clearHistory();
     return super.dispose();
+  }
+
+  /**
+   * Clears the canvas and saves the cleared state to history.
+   *
+   * @remarks
+   * When using `CanvasWithHistory`, use this method instead of `clear()`.
+   * The inherited `clear()` method does not record to history.
+   */
+  clearCanvas() {
+    this._historyProcessing = true;
+    this.clear();
+    this._historyProcessing = false;
+    this._historySaveAction();
   }
 }

@@ -192,18 +192,15 @@ describe("canvas operations with history management", () => {
     expect(canvas.getObjects().length).toBe(0);
   });
 
-  test("selection:created fires when multiple objects are selected", () => {
-    canvas.add(rect);
-    canvas.add(circle);
-    canvas.add(path);
+  test("clearCanvas can be undone and redone", async () => {
+    canvas.add(rect, circle);
+    canvas.clearCanvas();
+    expect(canvas.getObjects().length).toBe(0);
 
-    // Create an ActiveSelection with multiple objects (simulates multi-select)
-    const selection = new ActiveSelection([rect, circle], { canvas });
-    canvas.setActiveObject(selection);
+    await canvas.undo();
+    expect(canvas.getObjects().length).toBe(2);
 
-    // The console.log in _handleSelectionCreated should fire
-    // Check that the selection is active
-    expect(canvas.getActiveObject()).toBe(selection);
-    expect(canvas.getActiveObjects().length).toBe(2);
+    await canvas.redo();
+    expect(canvas.getObjects().length).toBe(0);
   });
 });
