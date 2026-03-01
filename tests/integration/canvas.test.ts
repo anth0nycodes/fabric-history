@@ -191,4 +191,16 @@ describe("canvas operations with history management", () => {
     // Undo on empty canvas: should still be empty with no errors
     expect(canvas.getObjects().length).toBe(0);
   });
+
+  test("clearCanvas can be undone and redone", async () => {
+    canvas.add(rect, circle);
+    canvas.clearCanvas();
+    expect(canvas.getObjects().length).toBe(0);
+
+    await canvas.undo();
+    expect(canvas.getObjects().length).toBe(2);
+
+    await canvas.redo();
+    expect(canvas.getObjects().length).toBe(0);
+  });
 });
