@@ -14,6 +14,10 @@ Thank you for your interest in contributing to fabric-history! We welcome contri
    ```bash
    pnpm install
    ```
+4. Install Playwright browsers (required for E2E tests):
+   ```bash
+   npx playwright install
+   ```
 
 ## Development Workflow
 
@@ -29,6 +33,16 @@ Thank you for your interest in contributing to fabric-history! We welcome contri
 
    ```bash
    pnpm test
+   ```
+
+   You can also run tests separately:
+
+   ```bash
+   # Run integration tests only
+   pnpm test:it
+
+   # Run E2E tests only (uses Playwright)
+   pnpm test:e2e
    ```
 
    For test coverage:
