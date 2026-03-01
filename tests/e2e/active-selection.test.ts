@@ -49,7 +49,9 @@ describe("ActiveSelection events", () => {
         (options: { target: FabricObject }) => {
           const targetType = options?.target?.type || "unknown";
           events.push(`${eventName} (${targetType})`);
-          console.log(`EVENT: ${eventName} (target: ${targetType})`);
+
+          // only uncomment if you want to see all events in real-time, make sure to comment it again before pushing (can be very verbose)
+          // console.log(`EVENT: ${eventName} (target: ${targetType})`);
         }
       );
     });
@@ -151,7 +153,7 @@ describe("ActiveSelection events", () => {
     console.log(`object:modified fired ${modifiedEvents.length} times`);
     console.log(`Modified event targets: ${modifiedEvents.join(", ")}`);
 
-    expect(true).toBe(true);
+    expect(movingEvents.length).toBeGreaterThan(0);
   });
 
   test("explore: what events fire when deleting an ActiveSelection", async () => {

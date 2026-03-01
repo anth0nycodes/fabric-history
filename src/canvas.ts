@@ -102,21 +102,16 @@ export class CanvasWithHistory extends Canvas {
    */
   private _handleSelectionUpdated(options: { selected: FabricObject[] }) {
     const allSelectedObjects = this.getActiveObjects();
-
-    if (allSelectedObjects.length > 1) {
-      this._selectedObjects = allSelectedObjects;
-      this._isMultiSelection = true;
-    }
+    this._selectedObjects = allSelectedObjects;
+    this._isMultiSelection = allSelectedObjects.length > 1;
   }
 
   /**
    * Clears the multi-selection state and sets the `_isMultiSelection` flag to false.
    */
   private _handleSelectionCleared() {
-    if (this._selectedObjects.length > 1 && this._isMultiSelection) {
-      this._selectedObjects = [];
-      this._isMultiSelection = false;
-    }
+    this._selectedObjects = [];
+    this._isMultiSelection = false;
   }
 
   /**
@@ -131,7 +126,7 @@ export class CanvasWithHistory extends Canvas {
   /**
    * Handles object removal events.
    *
-   * @param options - The event object containing details about the removed object.
+   * @param options - The options object containing details about the removed object.
    */
   private _handleObjectRemoved(options: { target: FabricObject }) {
     /*
@@ -246,7 +241,7 @@ export class CanvasWithHistory extends Canvas {
    * Checks for whether or not an action can be redone.
    */
   canRedo() {
-    return this._historyRedo.length >= 1;
+    return this._historyRedo.length > 0;
   }
 
   /**
@@ -277,7 +272,7 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Debug method to log relevant events to the console. Always remember to remove before pushing!
+   * Debug method to log relevant events to the console. Always remember to remove before pushing once you're done debugging locally!
    */
   private _historyDebug() {
     const EVENTS = [

@@ -17,8 +17,7 @@
   "main": "dist/index.js",
   "files": [
     "dist",
-    "src",
-    "tests"
+    "src"
   ],
   "types": "dist/index.d.ts",
   "keywords": [
