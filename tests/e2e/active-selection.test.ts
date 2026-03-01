@@ -1,4 +1,10 @@
-import { ActiveSelection, Circle, Rect, type CanvasEvents } from "fabric";
+import {
+  ActiveSelection,
+  Circle,
+  Rect,
+  type CanvasEvents,
+  type FabricObject,
+} from "fabric";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { CanvasWithHistory } from "../../src/canvas.js";
@@ -38,11 +44,14 @@ describe("ActiveSelection events", () => {
     ];
 
     eventsToTrack.forEach((eventName) => {
-      canvas.on(eventName as keyof CanvasEvents, (e: any) => {
-        const targetType = e?.target?.type || "unknown";
-        events.push(`${eventName} (${targetType})`);
-        console.log(`EVENT: ${eventName} (target: ${targetType})`);
-      });
+      canvas.on(
+        eventName as keyof CanvasEvents,
+        (options: { target: FabricObject }) => {
+          const targetType = options?.target?.type || "unknown";
+          events.push(`${eventName} (${targetType})`);
+          console.log(`EVENT: ${eventName} (target: ${targetType})`);
+        }
+      );
     });
 
     rect = new Rect({
