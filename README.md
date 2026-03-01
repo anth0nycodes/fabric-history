@@ -6,7 +6,9 @@ A library built on top of fabric.js that provides undo/redo history management f
 
 - Undo/Redo functionality for fabric.js canvases
 - Automatic history tracking for object additions, removals, and modifications
+- Multi-selection batching: operations on multiple selected objects are recorded as a single history entry
 - Support for path creation and erasing events
+- Custom events for history state changes
 - Easy integration with existing fabric.js projects
 - Support for fabric.js v6 and v7
 
@@ -65,13 +67,15 @@ Extends fabric.js `Canvas` class with history management capabilities.
 
 #### Methods
 
-| Method      | Returns         | Description                                     |
-| ----------- | --------------- | ----------------------------------------------- |
-| `undo()`    | `Promise<void>` | Undo the most recent action                     |
-| `redo()`    | `Promise<void>` | Redo the most recently undone action            |
-| `canUndo()` | `boolean`       | Check if an undo action is available            |
-| `canRedo()` | `boolean`       | Check if a redo action is available             |
-| `dispose()` | `void`          | Clean up event listeners and dispose the canvas |
+| Method           | Returns         | Description                                                                                           |
+| ---------------- | --------------- | ----------------------------------------------------------------------------------------------------- |
+| `undo()`         | `Promise<void>` | Undo the most recent action                                                                           |
+| `redo()`         | `Promise<void>` | Redo the most recently undone action                                                                  |
+| `canUndo()`      | `boolean`       | Check if an undo action is available                                                                  |
+| `canRedo()`      | `boolean`       | Check if a redo action is available                                                                   |
+| `clearHistory()` | `void`          | Clear the undo and redo history stacks                                                                |
+| `clearCanvas()`  | `void`          | Clear the canvas and save the cleared state to history (use this instead of the inherited `clear()`) |
+| `dispose()`      | `void`          | Clean up event listeners and dispose the canvas                                                       |
 
 #### Tracked Events
 
@@ -83,6 +87,29 @@ History is automatically saved when these fabric.js events occur:
 - `path:created` - When a path is created (e.g., freehand drawing)
 - `erasing:end` - When an erasing operation completes
 - `canvas:cleared` - When the canvas is cleared
+
+#### Custom Events
+
+`CanvasWithHistory` fires custom events that you can listen to for history state changes:
+
+| Event             | Payload                                          | Description                        |
+| ----------------- | ------------------------------------------------ | ---------------------------------- |
+| `history:append`  | `{ json: string, initial: boolean }`             | Fired when a state is saved        |
+| `history:undo`    | `{ lastUndoAction: string }`                     | Fired when an undo is performed    |
+| `history:redo`    | `{ lastRedoAction: string }`                     | Fired when a redo is performed     |
+| `history:cleared` | `{}`                                             | Fired when history stacks cleared  |
+
+**Example:**
+
+```typescript
+canvas.on("history:append", ({ json, initial }) => {
+  console.log("State saved:", initial ? "initial" : "action");
+});
+
+canvas.on("history:undo", ({ lastUndoAction }) => {
+  console.log("Undo performed");
+});
+```
 
 ## Requirements
 
@@ -103,8 +130,14 @@ pnpm build
 # Type check
 pnpm check
 
-# Run tests
+# Run all tests
 pnpm test
+
+# Run integration tests only
+pnpm test:it
+
+# Run E2E tests only (uses Playwright)
+pnpm test:e2e
 
 # Run tests with coverage
 pnpm coverage

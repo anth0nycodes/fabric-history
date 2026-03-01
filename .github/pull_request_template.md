@@ -31,7 +31,8 @@ Fixes #
 
 <!-- Describe the testing you've done -->
 
-- [ ] Tests pass locally with `pnpm test`
+- [ ] Integration tests pass locally with `pnpm test:it`
+- [ ] E2E tests pass locally with `pnpm test:e2e`
 - [ ] Type checking passes with `pnpm check`
 - [ ] Build succeeds with `pnpm build`
 
