@@ -115,10 +115,83 @@ describe("Path creation and erasing events", () => {
     expect(canvas.getObjects()[0].type).toBe("path");
   });
 
-  /**
-   * This test verifies erasing:end fires when using EraserBrush via setEraserBrush.
-   * Related to: https://github.com/anth0nycodes/fabric-history/issues/15
-   */
+  test("draw 3 strokes, erase each with 3 separate eraser strokes, then undo", async () => {
+    const wrapper = canvasEl.parentElement!;
+    const upperCanvas = wrapper.querySelector(
+      ".upper-canvas"
+    ) as HTMLCanvasElement;
+
+    // Step 1: Draw 3 strokes (spaced far apart to avoid overlap)
+    canvas.freeDrawingBrush = new PencilBrush(canvas);
+    canvas.freeDrawingBrush.width = 5;
+    canvas.isDrawingMode = true;
+
+    // Draw stroke 1 (horizontal line at y=100)
+    simulateDrawingGesture(upperCanvas, 50, 100, 250, 100);
+    // Draw stroke 2 (horizontal line at y=250)
+    simulateDrawingGesture(upperCanvas, 50, 250, 250, 250);
+    // Draw stroke 3 (horizontal line at y=400)
+    simulateDrawingGesture(upperCanvas, 50, 400, 250, 400);
+
+    expect(canvas.getObjects().length).toBe(3);
+
+    // Make all paths erasable
+    canvas.getObjects().forEach((obj) => {
+      obj.set("erasable", true);
+    });
+    canvas.renderAll();
+
+    // Count history entries after drawing (initial + 3 draws = 4 entries)
+    const historyAfterDraw = events.filter((e) =>
+      e.includes("history:append")
+    ).length;
+    events.length = 0;
+
+    // Step 2: Switch to EraserBrush and erase each stroke with 3 separate eraser strokes
+    const eraser = new EraserBrush(canvas);
+    eraser.width = 15;
+    canvas.setEraserBrush(eraser);
+    canvas.isDrawingMode = true;
+
+    // Erase stroke 1 (at y=100)
+    simulateDrawingGesture(upperCanvas, 100, 100, 200, 100);
+    // Wait for the async commit to complete before next erase
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    // Erase stroke 2 (at y=250)
+    simulateDrawingGesture(upperCanvas, 100, 250, 200, 250);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    // Erase stroke 3 (at y=400)
+    simulateDrawingGesture(upperCanvas, 100, 400, 200, 400);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    // Objects remain on canvas (eraser uses clip paths, not removal)
+    expect(canvas.getObjects().length).toBe(3);
+
+    // Verify erasing:end was fired 3 times (once per erase stroke)
+    const erasingEndEvents = events.filter((e) => e.includes("erasing:end"));
+    expect(erasingEndEvents.length).toBe(3);
+
+    // Verify history was appended for each erase
+    const historyAfterErase = events.filter((e) =>
+      e.includes("history:append")
+    ).length;
+    expect(historyAfterErase).toBe(3);
+
+    // Step 3: Undo should restore canvas state before each erase
+    // Undo all 3 erases
+    await canvas.undo();
+    await canvas.undo();
+    await canvas.undo();
+
+    // Objects should still be 3 (erasing doesn't remove objects)
+    expect(canvas.getObjects().length).toBe(3);
+
+    // Verify we can continue undoing the drawing operations
+    expect(canvas.canUndo()).toBe(true);
+  });
+
   test("erasing:end fires when erasing a path", async () => {
     // Get the upper canvas
     const wrapper = canvasEl.parentElement!;
