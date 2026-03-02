@@ -226,6 +226,9 @@ describe("Path creation and erasing events", () => {
     // Erase over the same area where the path was drawn
     simulateDrawingGesture(upperCanvas, 100, 100, 300, 100);
 
+    // Wait for the async eraser commit to complete
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     console.log("After erasing - Events:", events);
     console.log("Objects after erasing:", canvas.getObjects().length);
 
