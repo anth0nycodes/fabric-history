@@ -15,6 +15,9 @@ importers:
         specifier: '>=6.0.0 <8.0.0'
         version: 7.2.0
     devDependencies:
+      '@erase2d/fabric':
+        specifier: ^1.2.1
+        version: 1.2.1(fabric@7.2.0)
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.7.0
         version: 4.7.1(prettier@3.8.1)
@@ -166,6 +169,11 @@ packages:
   '@csstools/css-tokenizer@4.0.0':
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
+
+  '@erase2d/fabric@1.2.1':
+    resolution: {integrity: sha512-7VgjhCD5yHDMA8HbHf0cpU0T1q/MKMJQwPajuparLUQXb2tPbnwmczWXvojt0dQ66VS4Rs2caRNVucM9P9FfEA==}
+    peerDependencies:
+      fabric: '>=6.0.0'
 
   '@esbuild/aix-ppc64@0.27.2':
     resolution: {integrity: sha512-GZMB+a0mOMZs4MpDbj8RJp4cw+w1WV5NYD6xzgvzUJ5Ek2jerwfO2eADyI6ExDSUED+1X8aMbegahsJi+8mgpw==}
@@ -1366,6 +1374,10 @@ snapshots:
     optional: true
 
   '@csstools/css-tokenizer@4.0.0': {}
+
+  '@erase2d/fabric@1.2.1(fabric@7.2.0)':
+    dependencies:
+      fabric: 7.2.0
 
   '@esbuild/aix-ppc64@0.27.2':
     optional: true
