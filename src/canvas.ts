@@ -1,3 +1,4 @@
+import type { EraserBrush, ErasingEvent } from "@erase2d/fabric";
 import {
   Canvas,
   type CanvasEvents,
@@ -267,15 +268,6 @@ export class CanvasWithHistory extends Canvas {
   }
 
   /**
-   * Clears the history stacks for undo and redo.
-   */
-  clearHistory() {
-    this._historySaveInitialState();
-    this._historyRedo = [];
-    this.fire("history:cleared");
-  }
-
-  /**
    * Debug method to log relevant events to the console. Always remember to remove before pushing once you're done debugging locally!
    */
   private _historyDebug() {
@@ -317,6 +309,34 @@ export class CanvasWithHistory extends Canvas {
       "selection:updated": this._handleSelectionUpdated.bind(this),
       "selection:cleared": this._handleSelectionCleared.bind(this),
     });
+  }
+
+  /**
+   * Sets the provided `EraserBrush` instance as the canvas's eraser brush. This method is necessary to ensure that erasing actions are properly recorded in the history stack, as the default Fabric.js eraser brush does not trigger the relevant events for history tracking.
+   *
+   * @param eraser - The EraserBrush instance to set as the canvas's eraser brush.
+   */
+  setEraserBrush(eraser: EraserBrush) {
+    this.freeDrawingBrush = eraser;
+
+    eraser.on("end", (e: ErasingEvent<"end">) => {
+      const { targets: erasedTargets, path } = e.detail;
+      this.fire("erasing:end", {
+        path,
+        targets: erasedTargets,
+        subTargets: [],
+        drawables: {},
+      });
+    });
+  }
+
+  /**
+   * Clears the history stacks for undo and redo.
+   */
+  clearHistory() {
+    this._historySaveInitialState();
+    this._historyRedo = [];
+    this.fire("history:cleared");
   }
 
   /**

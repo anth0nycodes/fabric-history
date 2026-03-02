@@ -59,6 +59,28 @@ await canvas.undo();
 await canvas.redo();
 ```
 
+### Using with `@erase2d/fabric`
+
+To enable history tracking for erasing operations, use the `setEraserBrush` method with an `EraserBrush` from [`@erase2d/fabric`](https://github.com/erase2d/fabric). This ensures that erasing actions trigger the `erasing:end` event required for history tracking.
+
+```typescript
+import { CanvasWithHistory } from "@anth0nycodes/fabric-history";
+import { EraserBrush } from "@erase2d/fabric";
+
+const canvas = new CanvasWithHistory("my-canvas", {
+  width: 800,
+  height: 600,
+});
+
+// Create and set the eraser brush
+const eraser = new EraserBrush(canvas);
+eraser.width = 20;
+canvas.setEraserBrush(eraser);
+
+// Enable drawing mode to use the eraser
+canvas.isDrawingMode = true;
+```
+
 ## API
 
 ### `CanvasWithHistory`
@@ -67,15 +89,16 @@ Extends fabric.js `Canvas` class with history management capabilities.
 
 #### Methods
 
-| Method           | Returns         | Description                                                                                           |
-| ---------------- | --------------- | ----------------------------------------------------------------------------------------------------- |
-| `undo()`         | `Promise<void>` | Undo the most recent action                                                                           |
-| `redo()`         | `Promise<void>` | Redo the most recently undone action                                                                  |
-| `canUndo()`      | `boolean`       | Check if an undo action is available                                                                  |
-| `canRedo()`      | `boolean`       | Check if a redo action is available                                                                   |
-| `clearHistory()` | `void`          | Clear the undo and redo history stacks                                                                |
-| `clearCanvas()`  | `void`          | Clear the canvas and save the cleared state to history (use this instead of the inherited `clear()`) |
-| `dispose()`      | `void`          | Clean up event listeners and dispose the canvas                                                       |
+| Method                   | Returns         | Description                                                                                          |
+| ------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- |
+| `undo()`                 | `Promise<void>` | Undo the most recent action                                                                          |
+| `redo()`                 | `Promise<void>` | Redo the most recently undone action                                                                 |
+| `canUndo()`              | `boolean`       | Check if an undo action is available                                                                 |
+| `canRedo()`              | `boolean`       | Check if a redo action is available                                                                  |
+| `setEraserBrush(eraser)` | `void`          | Set an `EraserBrush` from `@erase2d/fabric` to enable history tracking for erasing operations        |
+| `clearHistory()`         | `void`          | Clear the undo and redo history stacks                                                               |
+| `clearCanvas()`          | `void`          | Clear the canvas and save the cleared state to history (use this instead of the inherited `clear()`) |
+| `dispose()`              | `void`          | Clean up event listeners and dispose the canvas                                                      |
 
 #### Tracked Events
 
@@ -92,12 +115,12 @@ History is automatically saved when these fabric.js events occur:
 
 `CanvasWithHistory` fires custom events that you can listen to for history state changes:
 
-| Event             | Payload                                          | Description                        |
-| ----------------- | ------------------------------------------------ | ---------------------------------- |
-| `history:append`  | `{ json: string, initial: boolean }`             | Fired when a state is saved        |
-| `history:undo`    | `{ lastUndoAction: string }`                     | Fired when an undo is performed    |
-| `history:redo`    | `{ lastRedoAction: string }`                     | Fired when a redo is performed     |
-| `history:cleared` | `{}`                                             | Fired when history stacks cleared  |
+| Event             | Payload                              | Description                       |
+| ----------------- | ------------------------------------ | --------------------------------- |
+| `history:append`  | `{ json: string, initial: boolean }` | Fired when a state is saved       |
+| `history:undo`    | `{ lastUndoAction: string }`         | Fired when an undo is performed   |
+| `history:redo`    | `{ lastRedoAction: string }`         | Fired when a redo is performed    |
+| `history:cleared` | `{}`                                 | Fired when history stacks cleared |
 
 **Example:**
 
