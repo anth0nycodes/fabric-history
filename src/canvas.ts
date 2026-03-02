@@ -97,11 +97,14 @@ export class CanvasWithHistory extends Canvas {
 
   /**
    * Stores the updated multi-selection state inside `_selectedObjects` and sets the `_isMultiSelection` flag to true if there are more than 1 objects selected.
-   *
-   * @param options - The options object containing the updated selected objects.
    */
-  private _handleSelectionUpdated(options: { selected: FabricObject[] }) {
+  private _handleSelectionUpdated() {
     const allSelectedObjects = this.getActiveObjects();
+    /*
+      Uses reference to `getActiveObjects()` instead of the callback's `options.selected` because `options.selected`
+      only contains the objects that are currently selected, it doesn't cover all the previously
+      selected objects that are in the current ActiveSelection.
+    */
     this._selectedObjects = allSelectedObjects;
     this._isMultiSelection = allSelectedObjects.length > 1;
   }
@@ -129,15 +132,15 @@ export class CanvasWithHistory extends Canvas {
    * @param options - The options object containing details about the removed object.
    */
   private _handleObjectRemoved(options: { target: FabricObject }) {
-    /*
-     Check !_historyProcessing to prevent recursion: this.remove() fires
-     object:removed events, which would re-enter this handler while we're
-     still processing the first removal.
-    */
+    // handle object:removed events differently based on whether or not the removed object is within an ActiveSelection
     if (
+      /* 
+      !this._historyProcessing is included to prevent unintended recursive behavior
+      caused by this.remove() since that also triggers an object:removed event
+      */
       !this._historyProcessing &&
       this._isMultiSelection &&
-      this._selectedObjects.some((obj) => obj === options.target)
+      this._selectedObjects.includes(options.target)
     ) {
       this._historyProcessing = true;
       const objectsToRemove = [...this._selectedObjects];
@@ -150,6 +153,7 @@ export class CanvasWithHistory extends Canvas {
       this._historySaveAction();
     }
   }
+
   /**
    * Starts the movement event listener for objects.
    */
