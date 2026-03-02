@@ -319,8 +319,13 @@ export class CanvasWithHistory extends Canvas {
   setEraserBrush(eraser: EraserBrush) {
     this.freeDrawingBrush = eraser;
 
-    eraser.on("end", (e: ErasingEvent<"end">) => {
+    eraser.on("end", async (e: ErasingEvent<"end">) => {
       const { targets: erasedTargets, path } = e.detail;
+      // Prevent the default commit so we can control when history is saved
+      e.preventDefault();
+      // Manually commit the erasing and wait for it to complete
+      await eraser.commit({ targets: erasedTargets, path });
+      // Now fire erasing:end after the canvas state has been updated
       this.fire("erasing:end", {
         path,
         targets: erasedTargets,
