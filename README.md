@@ -4,7 +4,7 @@ A library built on top of fabric.js that provides undo/redo history management f
 
 <p>
   <img alt="GitHub Stars" src="https://img.shields.io/github/stars/anth0nycodes/fabric-history?style=plastic">
-  <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Flicense-generator?style=plastic">
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Ffabric-history?style=plastic">
 </p>
 
 ## Features
