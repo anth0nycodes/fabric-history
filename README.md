@@ -2,14 +2,18 @@
 
 A library built on top of fabric.js that provides undo/redo history management for canvas operations.
 
+<p>
+  <img alt="GitHub Stars" src="https://img.shields.io/github/stars/anth0nycodes/license-generator?style=plastic">
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Flicense-generator?style=plastic">
+</p>
+
 ## Features
 
 - Undo/Redo functionality for fabric.js canvases
-- Automatic history tracking for object additions, removals, and modifications
+- Automatic history tracking for path creation, erasing events, object additions, removals, and modifications
 - Multi-selection batching: operations on multiple selected objects are recorded as a single history entry
-- Support for path creation and erasing events
 - Custom events for history state changes
-- Easy integration with existing fabric.js projects
+- Fully type-safe
 - Support for fabric.js v6 and v7
 
 ## Installation
@@ -104,12 +108,11 @@ Extends fabric.js `Canvas` class with history management capabilities.
 
 History is automatically saved when these fabric.js events occur:
 
+- `path:created` - When a path is created (e.g., freehand drawing)
+- `erasing:end` - When an erasing operation completes
 - `object:added` - When an object is added to the canvas
 - `object:removed` - When an object is removed from the canvas
 - `object:modified` - When an object is modified (moved, scaled, rotated, etc.)
-- `path:created` - When a path is created (e.g., freehand drawing)
-- `erasing:end` - When an erasing operation completes
-- `canvas:cleared` - When the canvas is cleared
 
 #### Custom Events
 
