@@ -70,9 +70,9 @@ export class CanvasWithHistory extends Canvas {
    */
   private _bindEventListeners() {
     this.on({
-      "path:created": this._historySaveAction.bind(this),
-      "erasing:end": this._historySaveAction.bind(this),
-      "object:added": this._historySaveAction.bind(this),
+      "path:created": () => this._historySaveAction(),
+      "erasing:end": () => this._historySaveAction(),
+      "object:added": (e) => this._historySaveAction(e),
       "object:removed": this._handleObjectRemoved.bind(this),
       "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
@@ -149,9 +149,9 @@ export class CanvasWithHistory extends Canvas {
       this.remove(...objectsToRemove);
       this.discardActiveObject();
       this._historyProcessing = false;
-      this._historySaveAction();
+      this._historySaveAction(options);
     } else {
-      this._historySaveAction();
+      this._historySaveAction(options);
     }
   }
 
@@ -168,10 +168,10 @@ export class CanvasWithHistory extends Canvas {
    *
    * @see {@link https://fabricjs.com/api/type-aliases/ObjectModificationEvents/ | Fabric.js ObjectModificationEvents}
    */
-  private _handleObjectModified() {
+  private _handleObjectModified(options: { target: FabricObject }) {
     // object:moving -> object:modified - modification is triggered as soon as the movement of an object halts
     this._historyIsMoving = false;
-    this._historySaveAction();
+    this._historySaveAction(options);
   }
 
   /**
@@ -186,8 +186,9 @@ export class CanvasWithHistory extends Canvas {
   /**
    * Records the current state of the canvas to the history stack if the state has changed since the last recorded state. This method is called after relevant canvas events such as object modifications, additions, and removals.
    */
-  private _historySaveAction() {
+  private _historySaveAction(e?: { target?: FabricObject }) {
     if (this._historyProcessing || this._historyIsMoving) return;
+    if (e?.target?.excludeFromExport) return;
     const latestJSON = this._historyCurrent();
 
     if (this._historyCurrentState === latestJSON) return; // skips duplicates
@@ -299,9 +300,9 @@ export class CanvasWithHistory extends Canvas {
    */
   private _disposeEventListeners() {
     this.off({
-      "path:created": this._historySaveAction.bind(this),
-      "erasing:end": this._historySaveAction.bind(this),
-      "object:added": this._historySaveAction.bind(this),
+      "path:created": () => this._historySaveAction(),
+      "erasing:end": () => this._historySaveAction(),
+      "object:added": (e) => this._historySaveAction(e),
       "object:removed": this._handleObjectRemoved.bind(this),
       "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
