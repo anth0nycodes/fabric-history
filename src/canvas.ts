@@ -72,7 +72,7 @@ export class CanvasWithHistory extends Canvas {
     this.on({
       "path:created": () => this._historySaveAction(),
       "erasing:end": () => this._historySaveAction(),
-      "object:added": (e) => this._historySaveAction(e),
+      "object:added": this._historySaveAction.bind(this),
       "object:removed": this._handleObjectRemoved.bind(this),
       "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
@@ -302,7 +302,7 @@ export class CanvasWithHistory extends Canvas {
     this.off({
       "path:created": () => this._historySaveAction(),
       "erasing:end": () => this._historySaveAction(),
-      "object:added": (e) => this._historySaveAction(e),
+      "object:added": this._historySaveAction.bind(this),
       "object:removed": this._handleObjectRemoved.bind(this),
       "object:moving": this._handleObjectMoving.bind(this),
       "object:modified": this._handleObjectModified.bind(this),
