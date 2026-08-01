@@ -32,10 +32,10 @@ importers:
         version: 4.0.18(vitest@4.1.0)
       canvas:
         specifier: ^3.2.1
-        version: 3.2.1
+        version: 3.2.3
       jsdom:
         specifier: ^29.1.1
-        version: 29.1.1(canvas@3.2.1)
+        version: 29.1.1(canvas@3.2.3)
       prettier-plugin-tailwindcss:
         specifier: ^0.8.0
         version: 0.8.0(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.1))(prettier@3.8.1)
@@ -47,7 +47,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ^4.0.18
-        version: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1))
+        version: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1))
 
 packages:
 
@@ -785,8 +785,8 @@ packages:
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
-  canvas@3.2.1:
-    resolution: {integrity: sha512-ej1sPFR5+0YWtaVp6S1N1FVz69TQCqmrkGeRvQxZeAB1nAIcjNTHVwrZtYtWFFBmQsF40/uDLehsW5KuYC99mg==}
+  canvas@3.2.3:
+    resolution: {integrity: sha512-PzE5nJZPz72YUAfo8oTp0u3fqqY7IzlTubneAihqDYAUcBk7ryeCmBbdJBEdaH0bptSOe2VT2Zwcb3UaFyaSWw==}
     engines: {node: ^18.12.0 || >= 20.9.0}
 
   chai@6.2.2:
@@ -1034,8 +1034,8 @@ packages:
   napi-build-utils@2.0.0:
     resolution: {integrity: sha512-GEbrYkbfF7MoNaoh2iGG84Mnf/WZfB0GdGEsM8wz7Expx/LlWf5U8t9nvJKXSp3qr5IsEbK04cBGhol/KwOsWA==}
 
-  node-abi@3.87.0:
-    resolution: {integrity: sha512-+CGM1L1CgmtheLcBuleyYOn7NWPVu0s0EJH2C4puxgEZb9h8QpR9G2dBfZJOAUhi7VQxuBPMd0hiISWcTyiYyQ==}
+  node-abi@3.94.0:
+    resolution: {integrity: sha512-W5ZNO5KRPB5TkYmGVD9F6YqhsglXJzE6etpbmT+f6EQElhiX/UTG551cnsRGvLG3fyZEg9HwaDmNmj5nwJ4z9g==}
     engines: {node: '>=10'}
 
   node-addon-api@7.1.1:
@@ -1158,8 +1158,8 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  pump@3.0.3:
-    resolution: {integrity: sha512-todwxLMY7/heScKmntwQG8CXVkWUOdYxIvY2s0VWAAMh/nd8SoYiRaKjlr7+iCs984f2P8zvrfWcDDYVb73NfA==}
+  pump@3.0.4:
+    resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -1197,6 +1197,11 @@ packages:
 
   semver@7.7.4:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -1240,8 +1245,8 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
-  tar-fs@2.1.4:
-    resolution: {integrity: sha512-mDAjwmZdh7LTT6pNleZ05Yt65HC3E+NiQzl672vQG38jIrehtJk/J3mNwIg+vShQPcLF/LV7CMnDW6vjj6sfYQ==}
+  tar-fs@2.1.5:
+    resolution: {integrity: sha512-OboTd8mmMhZDNPV+UjQcK9yKAatXu2aJ+r1w4im1Otd4M4fl2hwvdoXUxIYHFTHWK/3y3FarBP70v3vwmGlOxw==}
 
   tar-stream@2.2.0:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
@@ -1873,7 +1878,7 @@ snapshots:
       '@vitest/mocker': 4.0.18(vite@7.3.1(tsx@4.23.1))
       playwright: 1.58.2
       tinyrainbow: 3.0.3
-      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1))
+      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -1889,7 +1894,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.0.3
-      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1))
+      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1))
       ws: 8.19.0
     transitivePeerDependencies:
       - bufferutil
@@ -1909,7 +1914,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1))
+      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1))
     optionalDependencies:
       '@vitest/browser': 4.0.18(vite@7.3.1(tsx@4.23.1))(vitest@4.1.0)
 
@@ -1971,7 +1976,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1))
+      vitest: 4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1))
 
   '@vitest/utils@4.0.18':
     dependencies:
@@ -2012,7 +2017,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  canvas@3.2.1:
+  canvas@3.2.3:
     dependencies:
       node-addon-api: 7.1.1
       prebuild-install: 7.1.3
@@ -2140,8 +2145,8 @@ snapshots:
 
   fabric@7.2.0:
     optionalDependencies:
-      canvas: 3.2.1
-      jsdom: 26.1.0(canvas@3.2.1)
+      canvas: 3.2.3
+      jsdom: 26.1.0(canvas@3.2.3)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -2230,7 +2235,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  jsdom@26.1.0(canvas@3.2.1):
+  jsdom@26.1.0(canvas@3.2.3):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
@@ -2253,14 +2258,14 @@ snapshots:
       ws: 8.19.0
       xml-name-validator: 5.0.0
     optionalDependencies:
-      canvas: 3.2.1
+      canvas: 3.2.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
     optional: true
 
-  jsdom@29.1.1(canvas@3.2.1):
+  jsdom@29.1.1(canvas@3.2.3):
     dependencies:
       '@asamuzakjp/css-color': 5.1.11
       '@asamuzakjp/dom-selector': 7.1.1
@@ -2284,7 +2289,7 @@ snapshots:
       whatwg-url: 16.0.1
       xml-name-validator: 5.0.0
     optionalDependencies:
-      canvas: 3.2.1
+      canvas: 3.2.3
     transitivePeerDependencies:
       - '@noble/hashes'
 
@@ -2325,9 +2330,9 @@ snapshots:
 
   napi-build-utils@2.0.0: {}
 
-  node-abi@3.87.0:
+  node-abi@3.94.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   node-addon-api@7.1.1: {}
 
@@ -2385,11 +2390,11 @@ snapshots:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 2.0.0
-      node-abi: 3.87.0
-      pump: 3.0.3
+      node-abi: 3.94.0
+      pump: 3.0.4
       rc: 1.2.8
       simple-get: 4.0.1
-      tar-fs: 2.1.4
+      tar-fs: 2.1.5
       tunnel-agent: 0.6.0
 
   prettier-plugin-tailwindcss@0.8.0(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.1))(prettier@3.8.1):
@@ -2400,7 +2405,7 @@ snapshots:
 
   prettier@3.8.1: {}
 
-  pump@3.0.3:
+  pump@3.0.4:
     dependencies:
       end-of-stream: 1.4.5
       once: 1.4.0
@@ -2467,6 +2472,8 @@ snapshots:
 
   semver@7.7.4: {}
 
+  semver@7.8.5: {}
+
   siginfo@2.0.0: {}
 
   simple-concat@1.0.1: {}
@@ -2503,11 +2510,11 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
-  tar-fs@2.1.4:
+  tar-fs@2.1.5:
     dependencies:
       chownr: 1.1.4
       mkdirp-classic: 0.5.3
-      pump: 3.0.3
+      pump: 3.0.4
       tar-stream: 2.2.0
 
   tar-stream@2.2.0:
@@ -2598,7 +2605,7 @@ snapshots:
       fsevents: 2.3.3
       tsx: 4.23.1
 
-  vitest@4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.1))(vite@7.3.1(tsx@4.23.1)):
+  vitest@4.1.0(@vitest/browser-playwright@4.0.18)(@vitest/ui@4.0.18)(jsdom@29.1.1(canvas@3.2.3))(vite@7.3.1(tsx@4.23.1)):
     dependencies:
       '@vitest/expect': 4.1.0
       '@vitest/mocker': 4.1.0(vite@7.3.1(tsx@4.23.1))
@@ -2623,7 +2630,7 @@ snapshots:
     optionalDependencies:
       '@vitest/browser-playwright': 4.0.18(playwright@1.58.2)(vite@7.3.1(tsx@4.23.1))(vitest@4.1.0)
       '@vitest/ui': 4.0.18(vitest@4.1.0)
-      jsdom: 29.1.1(canvas@3.2.1)
+      jsdom: 29.1.1(canvas@3.2.3)
     transitivePeerDependencies:
       - msw
 
