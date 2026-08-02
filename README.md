@@ -85,6 +85,22 @@ canvas.setEraserBrush(eraser);
 canvas.isDrawingMode = true;
 ```
 
+### Excluding objects from history
+
+Set `excludeFromExport: true` on an object to prevent its changes from being saved to history.
+
+```typescript
+const rect = new Rect({
+  left: 0,
+  top: 0,
+  width: 800,
+  height: 1,
+  fill: "blue",
+  excludeFromExport: true, // changes to this object won't be saved to history
+});
+canvas.add(guide);
+```
+
 ## API
 
 ### `CanvasWithHistory`
